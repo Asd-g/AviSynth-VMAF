@@ -6,6 +6,10 @@ This is [a port of the VapourSynth plugin VMAF](https://github.com/HomeOfVapourS
 
 [vmaf](https://github.com/Netflix/vmaf/tree/v1.3.15) is used.
 
+# Note
+
+The folder `model` must be located in the same folder as `VMAF.dll`.
+
 # Usage
 
 ```
