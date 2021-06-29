@@ -132,6 +132,7 @@ AVS_VideoFrame* AVSC_CC vmaf_get_frame(AVS_FilterInfo* fi, int n)
 
     d->cond.notify_one();
 
+    avs_release_video_frame(dist);
     return ref;
 }
 
@@ -154,7 +155,6 @@ void AVSC_CC free_vmaf(AVS_FilterInfo* fi)
 
 AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* param)
 {
-    AVS_Value v;
     AVS_FilterInfo* fi;
 
     AVS_Clip* clip = avs_new_c_filter(env, &fi, avs_array_elt(args, 0), 1);
@@ -171,7 +171,7 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
     const int pool = (avs_defined(avs_array_elt(args, 7))) ? avs_as_int(avs_array_elt(args, 7)) : 1;
     params->ci = (avs_defined(avs_array_elt(args, 8))) ? avs_as_bool(avs_array_elt(args, 8)) : false;
 
-    v = avs_void;
+    AVS_Value v = avs_void;
     const int bits = avs_bits_per_component(&fi->vi);
 
     if (!avs_defined(v) && bits > 16)
@@ -200,6 +200,7 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
     params->fmt = const_cast<char*>("yuv420p");
 
     std::vector<wchar_t> charBuffer;
+    charBuffer.reserve(512);
     do {
         charBuffer.resize(512);
     } while (GetModuleFileNameW((HINSTANCE)&__ImageBase, charBuffer.data(), 512) == 512);
