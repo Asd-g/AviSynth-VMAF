@@ -23,25 +23,25 @@ VMAF (clip reference, clip distorted, string log_path, int "log_format", int[] "
     
 - log_format\
     Sets the format of the log file.\
-    0: xml.
-    1: json.
-    2: csv.
+    0: xml\
+    1: json\
+    2: csv\
     Default: 0.
     
 - model\
-    Sets which model to use.
+    Sets which model to use.\
     Refer to [this](https://github.com/Netflix/vmaf/blob/master/resource/doc/models.md), [this](https://netflixtechblog.com/toward-a-better-quality-metric-for-the-video-community-7ed94e752a30) and [this](https://github.com/Netflix/vmaf/blob/master/resource/doc/conf_interval.md) for more details.\
-    0: vmaf_v0.6.1
-    1: vmaf_v0.6.1neg (NEG mode)
-    2: vmaf_b_v0.6.3 (Confidence Interval)
-    3: vmaf_4k_v0.6.1
+    0: vmaf_v0.6.1\
+    1: vmaf_v0.6.1neg (NEG mode)\
+    2: vmaf_b_v0.6.3 (Confidence Interval)\
+    3: vmaf_4k_v0.6.1\
     Default: 0.
 
 - feature\
-    0: PSNR
-    1: PSNR-HVS
-    2: SSIM
-    3: MS-SSIM
+    0: PSNR\
+    1: PSNR-HVS\
+    2: SSIM\
+    3: MS-SSIM\
     4: CIEDE2000
     
 # Building
