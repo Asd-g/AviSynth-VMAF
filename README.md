@@ -4,59 +4,65 @@ VMAF is a perceptual video quality assessment algorithm developed by Netflix. Re
 
 This is [a port of the VapourSynth plugin VMAF](https://github.com/HomeOfVapourSynthEvolution/VapourSynth-VMAF).
 
-[vmaf](https://github.com/Netflix/vmaf/tree/v1.3.15) is used.
-
-# Note
-
-The folder `model` must be located in the same folder as `VMAF.dll`.
+[vmaf](https://github.com/Netflix/vmaf/tree/v2.2.0) is used.
 
 # Usage
 
 ```
-VMAF (clip reference, clip distorted, int "model", string "log_path", int "log_fmt", bool "ssim", bool "ms_ssim", int "pool", bool "ci")
+VMAF (clip reference, clip distorted, string log_path, int "log_format", int[] "model", int[] "feature")
 ```
 
 ## Parameters:
 
 - reference, distorted\
     Clips to calculate VMAF score.\
-    Must be in YUV 8..16-bit planar format.
-    
-- model\
-    Sets which model to use. Refer to the [models](https://github.com/Netflix/vmaf/blob/v1.3.15/resource/doc/models.md) page for more details.\
-    0: vmaf_v0.6.1.pkl\
-    1: vmaf_4k_v0.6.1.pkl\
-    Default: 0.
+    Must be in YUV 8..16-bit planar format with minimum three planes.
 
 - log_path\
-    Sets the path of the log file.\
-    Default: None.
+    Sets the path of the log file.
     
-- log_fmt\
+- log_format\
     Sets the format of the log file.\
-    0: xml.\
-    1: json.\
-    2: csv.\
+    0: xml.
+    1: json.
+    2: csv.
     Default: 0.
     
-- ssim\
-    Whether to also calculate SSIM score.\
-    Default: False.
+- model\
+    Sets which model to use.
+    Refer to [this](https://github.com/Netflix/vmaf/blob/master/resource/doc/models.md), [this](https://netflixtechblog.com/toward-a-better-quality-metric-for-the-video-community-7ed94e752a30) and [this](https://github.com/Netflix/vmaf/blob/master/resource/doc/conf_interval.md) for more details.\
+    0: vmaf_v0.6.1
+    1: vmaf_v0.6.1neg (NEG mode)
+    2: vmaf_b_v0.6.3 (Confidence Interval)
+    3: vmaf_4k_v0.6.1
+    Default: 0.
+
+- feature\
+    0: PSNR
+    1: PSNR-HVS
+    2: SSIM
+    3: MS-SSIM
+    4: CIEDE2000
     
-- ms_ssim\
-    Whether to also calculate MS-SSIM score.\
-    Default: False.
-    
-- pool\
-    Sets the method to pool the per-frame scores.\
-    0: Mean.\
-    1: Harmonic mean.\
-    2: Min.\
-    Default: 1.
-    
-- ci\
-    Whether to enable confidence interval.\
-    True: It uses vmaf_b_v0.6.3 for `model=0` and vmaf_4k_rb_v0.6.2 for `model=1`.\
-    Refer to the [VMAF confidence interval page](https://github.com/Netflix/vmaf/blob/v1.3.15/resource/doc/conf_interval.md) for more details.\
-    Default: False.
-    
+# Building
+
+## Requirements
+
+- Git
+- GCC C++17 compiler
+- CMake >= 3.16
+- AviSynth library
+- meson
+
+```
+git clone --recurse-submodules https://github.com/Asd-g/AviSynth-VMAF && \
+cd AviSynth-VMAF\vmaf && \
+mkdir vmaf_install && \
+meson setup libvmaf libvmaf/build --buildtype release --default-library static --prefix $(pwd)/vmaf_install && \
+meson install -C libvmaf/build && \
+cd .. && \
+mkdir build && \
+cd build && \
+cmake .. && \
+make -j$(nproc)
+```

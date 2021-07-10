@@ -1,0 +1,30 @@
+#include <winver.h>
+#include <ntdef.h>
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION             2,0,0,0
+PRODUCTVERSION        	2,0,0,0
+FILEFLAGSMASK           VS_FFI_FILEFLAGSMASK
+FILEFLAGS               0x0L
+FILEOS                  VOS__WINDOWS32
+FILETYPE                VFT_DLL
+FILESUBTYPE             VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+        VALUE "Comments",         "Video Multi-Method Assessment Fusion."
+        VALUE "FileDescription",  "VMAF for AviSynth 2.6 / AviSynth+"
+        VALUE "FileVersion",      "@ver@"
+        VALUE "InternalName",     "VMAF"
+        VALUE "OriginalFilename", "VMAF.dll"
+        VALUE "ProductName",      "VMAF"
+        VALUE "ProductVersion",   "@ver@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

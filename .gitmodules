@@ -1,4 +1,4 @@
 [submodule "vmaf"]
 	path = vmaf
 	url = https://github.com/Netflix/vmaf
-	branch = v1.3.15
+	branch = v2.2.0
