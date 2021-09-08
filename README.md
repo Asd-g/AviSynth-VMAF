@@ -1,4 +1,4 @@
-# Description
+## Description
 
 VMAF is a perceptual video quality assessment algorithm developed by Netflix. Refer to the [FAQ](https://github.com/Netflix/vmaf/blob/master/FAQ.md) page for frequently asked questions of VMAF.
 
@@ -6,13 +6,17 @@ This is [a port of the VapourSynth plugin VMAF](https://github.com/HomeOfVapourS
 
 [vmaf](https://github.com/Netflix/vmaf/tree/v2.2.0) is used.
 
-# Usage
+### Requirements:
+
+- AviSynth 2.60 / AviSynth+ 3.4 or later
+
+### Usage:
 
 ```
 VMAF (clip reference, clip distorted, string log_path, int "log_format", int[] "model", int[] "feature")
 ```
 
-## Parameters:
+### Parameters:
 
 - reference, distorted\
     Clips to calculate VMAF score.\
@@ -44,16 +48,16 @@ VMAF (clip reference, clip distorted, string log_path, int "log_format", int[] "
     3: MS-SSIM\
     4: CIEDE2000
     
-# Building
+### Building:
 
-## Requirements
-
-- Git
-- GCC C++17 compiler
-- CMake >= 3.16
-- AviSynth library
-- meson
-
+```
+Requirements:
+    - Git
+    - GCC C++17 compiler
+    - CMake >= 3.16
+    - AviSynth library
+    - meson
+```
 ```
 git clone --recurse-submodules https://github.com/Asd-g/AviSynth-VMAF && \
 cd AviSynth-VMAF\vmaf && \
