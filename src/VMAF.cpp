@@ -175,7 +175,7 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
         {
             if (avs_is_array(avs_array_elt(args, 4)))
                 return avs_array_size(avs_array_elt(args, 4));
-            else if (avs_is_int(avs_array_elt(args, 4)))
+            else
                 return -1;
         }
         else
@@ -212,19 +212,17 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
         (avs_get_plane_width_subsampling(&fi->vi, AVS_PLANAR_U) == 1 && avs_get_plane_height_subsampling(&fi->vi, AVS_PLANAR_U) == 0) ||
         (avs_get_plane_width_subsampling(&fi->vi, AVS_PLANAR_U) && avs_get_plane_height_subsampling(&fi->vi, AVS_PLANAR_U) == 0)))
         v = avs_new_value_error("VMAF: only 420/422/444 chroma subsampling is supported.");
-
-    const AVS_VideoInfo* vi1;
-
     if (!avs_defined(v))
-        vi1 = avs_get_video_info(params->distorted);
+    {
+        const AVS_VideoInfo* vi1 = avs_get_video_info(params->distorted);
 
-    if (!avs_defined(v) && !avs_is_same_colorspace(&fi->vi, vi1))
-        v = avs_new_value_error("VMAF: both clips must be the same format.");
-    if (!avs_defined(v) && fi->vi.width != vi1->width || fi->vi.height != vi1->height)
-        v = avs_new_value_error("VMAF: both clips must have the same dimensions.");
-    if (!avs_defined(v) && fi->vi.num_frames != vi1->num_frames)
-        v = avs_new_value_error("VMAF: both clips' number of frames don't match.");
-
+        if (!avs_is_same_colorspace(&fi->vi, vi1))
+            v = avs_new_value_error("VMAF: both clips must be the same format.");
+        if (!avs_defined(v) && fi->vi.width != vi1->width || fi->vi.height != vi1->height)
+            v = avs_new_value_error("VMAF: both clips must have the same dimensions.");
+        if (!avs_defined(v) && fi->vi.num_frames != vi1->num_frames)
+            v = avs_new_value_error("VMAF: both clips' number of frames don't match.");
+    }
     if (!avs_defined(v) && (logFormat < 0 || logFormat > 3))
         v = avs_new_value_error("VMAF: log_fmt must be 0, 1, 2 or 3.");
 
@@ -285,7 +283,7 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
             {
                 if (avs_is_array(avs_array_elt(args, 5)))
                     return avs_array_size(avs_array_elt(args, 5));
-                else if (avs_is_int(avs_array_elt(args, 5)))
+                else
                     return -1;
             }
             else

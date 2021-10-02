@@ -65,8 +65,6 @@ mkdir vmaf_install && \
 meson setup libvmaf libvmaf/build --buildtype release --default-library static --prefix $(pwd)/vmaf_install && \
 meson install -C libvmaf/build && \
 cd .. && \
-mkdir build && \
-cd build && \
-cmake .. && \
-make -j$(nproc)
+cmake -B build .
+cmake --build build
 ```

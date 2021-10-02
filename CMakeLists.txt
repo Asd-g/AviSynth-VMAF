@@ -35,7 +35,7 @@ endif()
 message(STATUS "Build type - ${CMAKE_BUILD_TYPE}")
 
 if (CMAKE_BUILD_TYPE MATCHES Release)
-    target_compile_options(vmaf PRIVATE -ffunction-sections)
+    string(APPEND CMAKE_CXX_FLAGS "-ffunction-sections -s")
 endif ()
 
 target_include_directories(vmaf PRIVATE
