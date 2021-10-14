@@ -42,7 +42,7 @@ using namespace std::literals;
 static constexpr const char* modelName[] = { "vmaf", "vmaf_neg", "vmaf_b", "vmaf_4k" };
 static constexpr const char* modelVersion[] = { "vmaf_v0.6.1", "vmaf_v0.6.1neg", "vmaf_b_v0.6.3", "vmaf_4k_v0.6.1" };
 
-static constexpr const char* featureName[] = { "psnr", "psnr_hvs", "float_ssim", "float_ms_ssim", "ciede" };
+static constexpr const char* featureName[] = { "psnr", "psnr_hvs", "float_ssim", "float_ms_ssim", "ciede", "cambi" };
 
 struct VMAF
 {
@@ -290,14 +290,14 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
                 return 0;
         }();
 
-        if (numFeature == -1)
+        if (numFeature > 0)
         {
             feature = std::make_unique<int[]>(numFeature);
 
             for (int i = 0; i < numFeature; ++i)
                 feature[i] = avs_is_int(*(avs_as_array(avs_array_elt(args, 5)) + i));
         }
-        else if (numFeature > 0)
+        else
         {
             feature = std::make_unique<int[]>(1);
             feature[0] = (feature == 0) ? 0 : avs_as_int(avs_array_elt(args, 5));
@@ -306,8 +306,8 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
 
         for (int i = 0; i < numFeature; ++i)
         {
-            if (feature[i] < 0 || feature[i] > 4)
-                v = avs_new_value_error("VMAF: feature must be 0, 1, 2, 3, or 4");
+            if (feature[i] < 0 || feature[i] > 5)
+                v = avs_new_value_error("VMAF: feature must be 0, 1, 2, 3, 4 or 5");
 
             if (!avs_defined(v) && std::count(feature.get(), feature.get() + numFeature, feature[i]) > 1)
                 v = avs_new_value_error("VMAF: duplicate feature specified");
