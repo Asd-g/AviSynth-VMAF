@@ -295,12 +295,12 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
             feature = std::make_unique<int[]>(numFeature);
 
             for (int i = 0; i < numFeature; ++i)
-                feature[i] = avs_is_int(*(avs_as_array(avs_array_elt(args, 5)) + i));
+                feature[i] = avs_as_int(*(avs_as_array(avs_array_elt(args, 5)) + i));
         }
-        else
+        else if (numFeature == -1)
         {
             feature = std::make_unique<int[]>(1);
-            feature[0] = (feature == 0) ? 0 : avs_as_int(avs_array_elt(args, 5));
+            feature[0] = avs_as_int(avs_array_elt(args, 5));
             numFeature = 1;
         }
 

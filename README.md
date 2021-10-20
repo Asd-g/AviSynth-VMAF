@@ -4,7 +4,7 @@ VMAF is a perceptual video quality assessment algorithm developed by Netflix. Re
 
 This is [a port of the VapourSynth plugin VMAF](https://github.com/HomeOfVapourSynthEvolution/VapourSynth-VMAF).
 
-[vmaf](https://github.com/Netflix/vmaf/tree/v2.2.0) is used.
+[vmaf](https://github.com/Netflix/vmaf) is used.
 
 ### Requirements:
 
@@ -46,7 +46,8 @@ VMAF (clip reference, clip distorted, string log_path, int "log_format", int[] "
     1: PSNR-HVS\
     2: SSIM\
     3: MS-SSIM\
-    4: CIEDE2000
+    4: CIEDE2000\
+    5: cambi
     
 ### Building:
 

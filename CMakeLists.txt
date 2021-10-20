@@ -15,15 +15,15 @@ endif ()
 
 if (MINGW)
     configure_file (
-    "${PROJECT_SOURCE_DIR}/vmaf.rc.in"
-    "${PROJECT_SOURCE_DIR}/vmaf.rc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/vmaf.rc.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/vmaf.rc"
     )
 endif ()
 
 set (sources src/VMAF.cpp)
 
 if (MINGW)
-    set (sources ${sources} vmaf.rc)
+    set (sources ${sources} ${CMAKE_CURRENT_BINARY_DIR}/vmaf.rc)
 endif ()
 
 add_library(vmaf SHARED ${sources})
