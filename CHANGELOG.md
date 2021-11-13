@@ -1,7 +1,11 @@
+##### 2.1.0:
+    Added parameter cambi_opt.
+    Removed model default value.
+
 ##### 2.0.2:
     Fixed feature parameter.
     Updated vmaf lib to 2.3.0.
-    Added feature cambi.
+    Added feature CAMBI.
 
 ##### 2.0.1:
     Fixed crashing when unsupported color formats are used.

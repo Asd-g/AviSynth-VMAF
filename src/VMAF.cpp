@@ -23,13 +23,15 @@
   SOFTWARE.
 */
 
-#include <filesystem>
-#include <mutex>
-#include <thread>
+#include <algorithm>
 #include <condition_variable>
-#include <vector>
 #include <cstring>
+#include <filesystem>
 #include <iostream>
+#include <mutex>
+#include <regex>
+#include <thread>
+#include <vector>
 
 #include "avisynth_c.h"
 
@@ -170,33 +172,17 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
     const int logFormat = (avs_is_int(avs_array_elt(args, 3))) ? avs_as_int(avs_array_elt(args, 3)) : 0;
 
     std::unique_ptr<int[]> model;
-    int numModel = [&]() {
-        if (avs_defined(avs_array_elt(args, 4)))
-        {
-            if (avs_is_array(avs_array_elt(args, 4)))
-                return avs_array_size(avs_array_elt(args, 4));
-            else
-                return -1;
-        }
-        else
-            return 0;
-    }();
+    const int numModel = (avs_defined(avs_array_elt(args, 4))) ? avs_array_size(avs_array_elt(args, 4)) : 0;
     
-    if (numModel < 1)
-    {
-        model = std::make_unique<int[]>(1);
-        model[0] = (numModel == 0) ? 0 : avs_as_int(avs_array_elt(args, 4));
-        numModel = 1;
-    }
-    else
+    if (numModel > 0)
     {
         model = std::make_unique<int[]>(numModel);
 
         for (int i = 0; i < numModel; ++i)
             model[i] = avs_as_int(*(avs_as_array(avs_array_elt(args, 4)) + i));
-    }
-
-    params->model.resize(numModel);
+        
+        params->model.resize(numModel);
+    }    
 
     AVS_Value v = avs_void;
 
@@ -278,17 +264,7 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
     if (!avs_defined(v))
     {
         std::unique_ptr<int[]> feature;
-        int numFeature = [&]() {
-            if (avs_defined(avs_array_elt(args, 5)))
-            {
-                if (avs_is_array(avs_array_elt(args, 5)))
-                    return avs_array_size(avs_array_elt(args, 5));
-                else
-                    return -1;
-            }
-            else
-                return 0;
-        }();
+        const int numFeature = (avs_defined(avs_array_elt(args, 5))) ? avs_array_size(avs_array_elt(args, 5)) : 0;
 
         if (numFeature > 0)
         {
@@ -296,12 +272,6 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
 
             for (int i = 0; i < numFeature; ++i)
                 feature[i] = avs_as_int(*(avs_as_array(avs_array_elt(args, 5)) + i));
-        }
-        else if (numFeature == -1)
-        {
-            feature = std::make_unique<int[]>(1);
-            feature[0] = avs_as_int(avs_array_elt(args, 5));
-            numFeature = 1;
         }
 
         for (int i = 0; i < numFeature; ++i)
@@ -312,7 +282,142 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
             if (!avs_defined(v) && std::count(feature.get(), feature.get() + numFeature, feature[i]) > 1)
                 v = avs_new_value_error("VMAF: duplicate feature specified");
 
-            if (!avs_defined(v) && vmaf_use_feature(params->vmaf, featureName[feature[i]], nullptr))
+            if (!avs_defined(v) && feature[i] == 5)
+            {
+                if (avs_defined(avs_array_elt(args, 6)))
+                {		            
+                    std::regex reg(R"((\w+)=([^ >]+)(?: (\w+)(?:=([^ >]+)))?(?: (\w+)(?:=([^ >]+)))?(?: (\w+)(?:=([^ >]+)))?(?: (\w+)(?:=([^ >]+)))?)");
+                    std::string cambi_opt = avs_as_string(avs_array_elt(args, 6));
+
+                    std::smatch match;
+                    if (!std::regex_match(cambi_opt.cbegin(), cambi_opt.cend(), match, reg))
+                        v = avs_new_value_error("VMAF: cannot parse cambi_opt.");
+                                    
+                    if (!avs_defined(v))
+                    {
+                        VmafFeatureDictionary* featureDictionary {};
+                        std::vector<int> unique_name;
+                        unique_name.reserve(match.size());
+                                        
+                        for (int i = 1; i < match.size(); i += 2)
+                        {                        
+                            if (match[i].str() == "enc_width")
+                            {
+                                if (std::stoi(match[i + 1].str()) < 320 || std::stoi(match[i + 1].str()) > 7680)
+                                {
+                                    v = avs_new_value_error("VMAF: enc_width must be between 320..7680.");
+                                    break;
+                                }
+                                
+                                unique_name.emplace_back(1);
+                                if (std::count(unique_name.begin(), unique_name.end(), 1) > 1)
+                                {
+                                    v = avs_new_value_error("VMAF: duplicate cambi_opt specified");
+                                    break;
+                                }
+                                
+                            }
+                            else if (match[i].str() == "enc_height")
+                            {
+                                if (std::stoi(match[i + 1].str()) < 200 || std::stoi(match[i + 1].str()) > 4320)
+                                {
+                                    v = avs_new_value_error("VMAF: enc_height must be between 200..4320.");
+                                    break;
+                                }
+                                
+                                unique_name.emplace_back(2);
+                                if (std::count(unique_name.begin(), unique_name.end(), 2) > 1)
+                                {
+                                    v = avs_new_value_error("VMAF: duplicate cambi_opt specified");
+                                    break;
+                                }
+                            }
+                            else if (match[i].str() == "window_size")
+                            {
+                                if (std::stoi(match[i + 1].str()) < 15 || std::stoi(match[i + 1].str()) > 127)
+                                {
+                                    v = avs_new_value_error("VMAF: window_size must be between 15..127.");
+                                    break;
+                                }
+                                
+                                unique_name.emplace_back(3);
+                                if (std::count(unique_name.begin(), unique_name.end(), 3) > 1)
+                                {
+                                    v = avs_new_value_error("VMAF: duplicate cambi_opt specified");
+                                    break;
+                                }
+                            }
+                            else if (match[i].str() == "topk")
+                            {
+                                if (std::stod(match[i + 1].str()) < 0.0001 || std::stod(match[i + 1].str()) > 1.0)
+                                {
+                                    v = avs_new_value_error("VMAF: topk must be between 0.0001..1.0.");
+                                    break;
+                                }
+                                
+                                unique_name.emplace_back(4);
+                                if (std::count(unique_name.begin(), unique_name.end(), 4) > 1)
+                                {
+                                    v = avs_new_value_error("VMAF: duplicate cambi_opt specified");
+                                    break;
+                                }
+                            }
+                            else if (match[i].str() == "tvi_threshold")
+                            {
+                                if (std::stod(match[i + 1].str()) < 0.0001 || std::stod(match[i + 1].str()) > 1.0)
+                                {
+                                    v = avs_new_value_error("VMAF: tvi_threshold must be between 0.0001..1.0.");
+                                    break;
+                                }
+                                
+                                unique_name.emplace_back(5);
+                                if (std::count(unique_name.begin(), unique_name.end(), 5) > 1)
+                                {
+                                    v = avs_new_value_error("VMAF: duplicate cambi_opt specified");
+                                    break;
+                                }
+                            }
+                            else if (match[i].length())
+                            {
+                                static const std::string m = "VMAF: wrong cambi_opt " + match[i].str() + ".";
+                                v = avs_new_value_error((m).c_str());
+                                break;
+                            }
+                            else
+                                break;       
+                        }
+                    
+                        if (!avs_defined(v))
+                        {
+                            for (int i = 1; i < match.size(); i += 2)
+                            {
+                                if (match[i].length() == 0)
+                                    break;
+                                
+                                if (vmaf_feature_dictionary_set(&featureDictionary, match[i].str().c_str(), match[i + 1].str().c_str()))
+                                {
+                                    static const std::string m = "VMAF: failed to set cambi option "s + match[i].str() + "."s;
+                                    v = avs_new_value_error((m).c_str());
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        if (!avs_defined(v) && vmaf_use_feature(params->vmaf, "cambi", featureDictionary))
+                        {
+                            vmaf_feature_dictionary_free(&featureDictionary);
+                            v = avs_new_value_error("VMAF: failed to load feature extractor: cambi.");				            
+                        }
+                    }
+                }
+                else
+                {
+                    if (vmaf_use_feature(params->vmaf, "cambi", nullptr))
+                        v = avs_new_value_error("VMAF: failed to load feature extractor: cambi.");
+                }
+            }
+            
+            if (!avs_defined(v) && feature[i] != 5 && vmaf_use_feature(params->vmaf, featureName[feature[i]], nullptr))
                 v = avs_new_value_error(("VMAF: failed to load feature extractor: "s + featureName[feature[i]]).c_str());
 
             if (!avs_defined(v))
@@ -348,6 +453,6 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment* env, AVS_Value args, void* 
 
 const char* AVSC_CC avisynth_c_plugin_init(AVS_ScriptEnvironment* env)
 {
-    avs_add_function(env, "VMAF", "ccs[log_format]i[model]i*[feature]i*", Create_VMAF, 0);
+    avs_add_function(env, "VMAF", "ccs[log_format]i[model]i*[feature]i*[cambi_opt]s", Create_VMAF, 0);
     return "VMAF";
 }

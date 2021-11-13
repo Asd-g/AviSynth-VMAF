@@ -13,7 +13,7 @@ This is [a port of the VapourSynth plugin VMAF](https://github.com/HomeOfVapourS
 ### Usage:
 
 ```
-VMAF (clip reference, clip distorted, string log_path, int "log_format", int[] "model", int[] "feature")
+VMAF (clip reference, clip distorted, string log_path, int "log_format", int[] "model", int[] "feature", string "cambi_opt")
 ```
 
 ### Parameters:
@@ -38,8 +38,7 @@ VMAF (clip reference, clip distorted, string log_path, int "log_format", int[] "
     0: vmaf_v0.6.1\
     1: vmaf_v0.6.1neg (NEG mode)\
     2: vmaf_b_v0.6.3 (Confidence Interval)\
-    3: vmaf_4k_v0.6.1\
-    Default: 0.
+    3: vmaf_4k_v0.6.1
 
 - feature\
     0: PSNR\
@@ -47,7 +46,31 @@ VMAF (clip reference, clip distorted, string log_path, int "log_format", int[] "
     2: SSIM\
     3: MS-SSIM\
     4: CIEDE2000\
-    5: cambi
+    5: CAMBI
+    
+- cambi_opt\
+    Additional options for feature CAMBI:
+    - enc_width, enc_height\
+        Encoding/processing resolution to compute the banding score, useful in cases where scaling was applied to the input prior to the computation of metrics.\
+        enc_width must be between 320 and 7680.\
+        enc_height must be between 200 and 4320.\
+        Default: Same as input image.
+    - window_size\
+        Window size to compute CAMBI.\
+        Must be between 15 and 127.\
+        Default: 63 (corresponds to ~1 degree at 4K resolution and 1.5H).
+    - topk\
+        Ratio of pixels for the spatial pooling computation.\
+        Must be between 0.0001 and 1.0.\
+        Default: 0.6.
+    - tvi_threshold\
+        Visibilty threshold for luminance ΔL < tvi_threshold*L_mean for BT.1886.\
+        Must be between 0.0001 and 1.0.\
+        Default: 0.019.
+        
+    Format: `option_name=value`.\
+    If more than one option is specified, the options must be separated by space.\
+    Usage example: `cambi_opt="windows_size=120 enc_width=1280 enc_height=720"`.    
     
 ### Building:
 
