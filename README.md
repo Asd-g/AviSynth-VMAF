@@ -95,6 +95,14 @@ VMAF2 (clip reference, clip "distorted", int[] "feature", string "cambi_opt")
     Must be in YUV 8..10-bit planar format with minimum three planes.\
     `distorted` must be specified when feature != 5.
 
+- feature\
+    0: PSNR\
+    1: PSNR-HVS\
+    2: SSIM\
+    3: MS-SSIM\
+    4: CIEDE2000\
+    5: CAMBI
+
 - cambi_opt\
     Additional options for feature CAMBI:
     - enc_width, enc_height\
