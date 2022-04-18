@@ -20,7 +20,11 @@ if (MINGW)
     )
 endif ()
 
-set (sources src/VMAF.cpp)
+set (sources
+    src/VMAF.cpp
+    src/VMAF2.cpp
+    src/plugin.cpp
+)
 
 if (MINGW)
     set (sources ${sources} ${CMAKE_CURRENT_BINARY_DIR}/vmaf.rc)
@@ -67,16 +71,16 @@ target_compile_features(vmaf PRIVATE cxx_std_17)
 
 if (UNIX)
     include(GNUInstallDirs)
-    
+
     INSTALL(TARGETS vmaf LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}/avisynth")
-            
+
     # uninstall target
     if(NOT TARGET uninstall)
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
         IMMEDIATE @ONLY)
-    
+
     add_custom_target(uninstall
         COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
     endif()
