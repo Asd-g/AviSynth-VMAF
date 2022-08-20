@@ -47,16 +47,18 @@ target_include_directories(vmaf PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/vmaf/vmaf_install/include
 )
 
-target_link_libraries(vmaf PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/AviSynth.lib
-    ${CMAKE_CURRENT_SOURCE_DIR}/vmaf/vmaf_install/lib/libvmaf.a
-)
-
 if (MINGW)
     target_link_libraries(vmaf PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/AviSynth.lib
+        ${CMAKE_CURRENT_SOURCE_DIR}/vmaf/vmaf_install/lib/libvmaf.a
         -static-libstdc++
         -static-libgcc
         -static -lwinpthread
+    )
+else ()
+    target_link_libraries(vmaf PRIVATE
+        libavisynth.so
+        ${CMAKE_CURRENT_SOURCE_DIR}/vmaf/vmaf_install/lib/x86_64-linux-gnu/libvmaf.a
     )
 endif ()
 
