@@ -269,7 +269,7 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment *env, AVS_Value args, void *
                         std::vector<int> unique_name;
                         unique_name.reserve(match.size());
 
-                        for (int i = 1; i < match.size(); i += 2)
+                        for (int i = 1; match[i + 1].matched; i += 2)
                         {
                             if (match[i].str() == "enc_width")
                             {
@@ -403,11 +403,8 @@ AVS_Value AVSC_CC Create_VMAF(AVS_ScriptEnvironment *env, AVS_Value args, void *
 
                         if (!avs_defined(v))
                         {
-                            for (int i = 1; i < match.size(); i += 2)
+                            for (int i = 1; match[i + 1].matched; i += 2)
                             {
-                                if (match[i].length() == 0)
-                                    break;
-
                                 if (vmaf_feature_dictionary_set(&featureDictionary, match[i].str().c_str(), match[i + 1].str().c_str()))
                                 {
                                     static const std::string m = "VMAF: failed to set cambi option "s + match[i].str() + "."s;

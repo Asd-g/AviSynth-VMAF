@@ -300,7 +300,7 @@ AVS_Value AVSC_CC Create_VMAF2(AVS_ScriptEnvironment* env, AVS_Value args, void*
                             std::vector<int> unique_name;
                             unique_name.reserve(match.size());
 
-                            for (int i = 1; i < match.size(); i += 2)
+                            for (int i = 1; match[i + 1].matched; i += 2)
                             {
                                 if (match[i].str() == "enc_width")
                                 {
