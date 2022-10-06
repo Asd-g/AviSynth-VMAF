@@ -1,3 +1,6 @@
+##### 2.1.2:
+    Fixed undefined behavior when upstream throw runtime error.
+
 ##### 2.1.1:
     Added `cambi_opt` options - `max_log_contrast`, `enc_bitdepth`, `eotf`.
     Added function `VMAF2`.
