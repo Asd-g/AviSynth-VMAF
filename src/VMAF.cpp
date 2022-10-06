@@ -20,7 +20,12 @@ AVS_VideoFrame *AVSC_CC vmaf_get_frame(AVS_FilterInfo *fi, int n)
     VMAF *d = reinterpret_cast<VMAF *>(fi->user_data);
 
     AVS_VideoFrame *reference = avs_get_frame(fi->child, n);
+    if (!reference)
+        return nullptr;
+
     AVS_VideoFrame *distorted = avs_get_frame(d->distorted, n);
+    if (!distorted)
+        return nullptr;
 
     VmafPicture ref{}, dist{};
 

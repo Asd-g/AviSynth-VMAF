@@ -82,7 +82,18 @@ AVS_VideoFrame* AVSC_CC vmaf2_get_frame(AVS_FilterInfo* fi, int n)
     }
 
     AVS_VideoFrame* reference = avs_get_frame(fi->child, n);
+    if (!reference)
+    {
+        vmaf_close(vmaf);
+        return nullptr;
+    }
+
     AVS_VideoFrame* distorted = avs_get_frame(d->distorted, n);
+    if (!distorted)
+    {
+        vmaf_close(vmaf);
+        return nullptr;
+    }
 
     VmafPicture ref{};
     VmafPicture dist{};
@@ -159,15 +170,11 @@ AVS_VideoFrame* AVSC_CC vmaf2_get_frame(AVS_FilterInfo* fi, int n)
 
 void AVSC_CC free_vmaf2(AVS_FilterInfo* fi)
 {
-    const char* ErrorText = 0;
     VMAF2* d = reinterpret_cast<VMAF2*>(fi->user_data);
 
     avs_release_clip(d->distorted);
 
     delete d;
-
-    if (ErrorText)
-        std::cout << ErrorText;
 }
 
 static int AVSC_CC vmaf2_set_cache_hints(AVS_FilterInfo *fi, int cachehints, int frame_range)
