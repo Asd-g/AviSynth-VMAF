@@ -8,8 +8,8 @@ This is [a port of the VapourSynth plugin VMAF](https://github.com/HomeOfVapourS
 
 ### Requirements:
 
-- AviSynth 2.60 / AviSynth+ 3.4 or later for VMAF
-- AviSynth+ 3.6 or later for VMAF2
+- AviSynth 2.60 / AviSynth+ 3.4 or later for VMAF (recommended >= r3689)
+- AviSynth+ 3.6 or later for VMAF2 (recommended >= r3689)
 
 ### Usage:
 
