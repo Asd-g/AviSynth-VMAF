@@ -17,7 +17,7 @@ AVS_VideoFrame* AVSC_CC vmaf2_get_frame(AVS_FilterInfo* fi, int n)
     const char* ErrorText = 0;
     VMAF2* d = reinterpret_cast<VMAF2*>(fi->user_data);
 
-    VmafConfiguration configuration {};
+    VmafConfiguration configuration{};
     configuration.log_level = VMAF_LOG_LEVEL_NONE;
     configuration.n_threads = 0;
     configuration.n_subsample = 1;
@@ -36,7 +36,7 @@ AVS_VideoFrame* AVSC_CC vmaf2_get_frame(AVS_FilterInfo* fi, int n)
             {
                 if (d->f)
                 {
-                    VmafFeatureDictionary* featureDictionary {};
+                    VmafFeatureDictionary* featureDictionary{};
 
                     for (int i = 1; i < d->match.size(); i += 2)
                     {
@@ -177,7 +177,7 @@ void AVSC_CC free_vmaf2(AVS_FilterInfo* fi)
     delete d;
 }
 
-static int AVSC_CC vmaf2_set_cache_hints(AVS_FilterInfo *fi, int cachehints, int frame_range)
+static int AVSC_CC vmaf2_set_cache_hints(AVS_FilterInfo* fi, int cachehints, int frame_range)
 {
     return cachehints == AVS_CACHE_GET_MTMODE ? 1 : 0;
 }
@@ -223,7 +223,7 @@ AVS_Value AVSC_CC Create_VMAF2(AVS_ScriptEnvironment* env, AVS_Value args, void*
             if (avs_defined(avs_array_elt(args, 1)))
             {
                 params->distorted = avs_take_clip(avs_array_elt(args, 1), env);
-                const AVS_VideoInfo *vi1 = avs_get_video_info(params->distorted);
+                const AVS_VideoInfo* vi1 = avs_get_video_info(params->distorted);
 
                 if (!avs_is_same_colorspace(&fi->vi, vi1))
                     v = avs_new_value_error("VMAF2: both clips must be the same format.");
@@ -233,6 +233,8 @@ AVS_Value AVSC_CC Create_VMAF2(AVS_ScriptEnvironment* env, AVS_Value args, void*
                     v = avs_new_value_error("VMAF2: both clips' number of frames don't match.");
             }
         }
+        else
+            v = avs_new_value_error("VMAF2: no feature specified.");
     }
 
     if (!avs_defined(v))
@@ -240,36 +242,36 @@ AVS_Value AVSC_CC Create_VMAF2(AVS_ScriptEnvironment* env, AVS_Value args, void*
         for (int i = 0; i < params->numFeature; ++i)
         {
             if (params->feature[i] < 0 || params->feature[i] > 5)
-                v = avs_new_value_error("VMAF2: feature must be 0, 1, 2, 3, 4 or 5");
+                v = avs_new_value_error("VMAF2: feature must be 0, 1, 2, 3, 4 or 5.");
 
             if (!avs_defined(v) && std::count(params->feature.begin(), params->feature.end(), params->feature[i]) > 1)
-                v = avs_new_value_error("VMAF2: duplicate feature specified");
+                v = avs_new_value_error("VMAF2: duplicate feature specified.");
 
             switch (params->feature[i])
             {
-            case 0:
-                params->featureN.emplace_back("psnr_y");
-                params->featureN.emplace_back("psnr_cb");
-                params->featureN.emplace_back("psnr_cr");
-                break;
-            case 1:
-                params->featureN.emplace_back("psnr_hvs_y");
-                params->featureN.emplace_back("psnr_hvs_cb");
-                params->featureN.emplace_back("psnr_hvs_cr");
-                params->featureN.emplace_back("psnr_hvs");
-                break;
-            case 2:
-                params->featureN.emplace_back("float_ssim");
-                break;
-            case 3:
-                params->featureN.emplace_back("float_ms_ssim");
-                break;
-            case 4:
-                params->featureN.emplace_back("ciede2000");
-                break;
-            case 5:
-                params->featureN.emplace_back("cambi");
-                break;
+                case 0:
+                    params->featureN.emplace_back("psnr_y");
+                    params->featureN.emplace_back("psnr_cb");
+                    params->featureN.emplace_back("psnr_cr");
+                    break;
+                case 1:
+                    params->featureN.emplace_back("psnr_hvs_y");
+                    params->featureN.emplace_back("psnr_hvs_cb");
+                    params->featureN.emplace_back("psnr_hvs_cr");
+                    params->featureN.emplace_back("psnr_hvs");
+                    break;
+                case 2:
+                    params->featureN.emplace_back("float_ssim");
+                    break;
+                case 3:
+                    params->featureN.emplace_back("float_ms_ssim");
+                    break;
+                case 4:
+                    params->featureN.emplace_back("ciede2000");
+                    break;
+                case 5:
+                    params->featureN.emplace_back("cambi");
+                    break;
             }
 
             if (!avs_defined(v) && params->feature[i] == 5)
